@@ -35,6 +35,25 @@
         },
       },
     };
+
+    /* Early fallback handler so broken/missing local images never cause a ReferenceError */
+    function handleImgFallback(imgEl, filename, label) {
+      if (!imgEl || !imgEl.parentElement) return;
+      const parent = imgEl.parentElement;
+      imgEl.style.display = 'none';
+      const fallback = document.createElement('div');
+      fallback.className = 'w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-ochre/20 via-creamDark to-terracotta/15 text-charcoal';
+      fallback.innerHTML = `
+        <svg class="w-10 h-10 text-terracotta mb-2 opacity-80" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <path d="M21 15l-5-5L5 21"></path>
+        </svg>
+        <p class="font-serif font-semibold text-base">${label}</p>
+        <p class="text-[11px] text-muted mt-1">Place <code class="bg-white/80 px-1.5 py-0.5 rounded">${filename}</code> in the same folder as index.html</p>
+      `;
+      parent.insertBefore(fallback, parent.firstChild);
+    }
   </script>
 
   <style>
@@ -78,7 +97,7 @@
       transform: scale(1.12);
     }
 
-    /* Hide scrollbar for review slider */
+    /* Hide scrollbar for horizontal sliders */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -102,7 +121,7 @@
         </div>
         <div class="leading-tight">
           <span class="block font-serif font-semibold text-base sm:text-lg text-charcoal tracking-tight">Relationship Building</span>
-          <span class="block text-xs font-medium text-terracotta tracking-wide" data-i18n="brandSub">with Mrs M • Thembeka Mkhunu</span>
+          <span class="block text-xs font-medium text-terracotta tracking-wide" data-i18n="brandSub">with Mrs M • Thembeka Mchunu</span>
         </div>
       </a>
 
@@ -383,7 +402,7 @@
               <span data-i18n="urgHigh">Heavy / Urgent</span>
             </div>
             <input id="urgencySlider" type="range" min="1" max="3" step="1" value="2" class="w-full" oninput="updateUrgencyLabel(this.value)" />
-            <p id="urgencySelectedText" class="mt-4 text-center font-serif text-lg font-semibold text-terracotta" data-i18n="urgMedDesc">
+            <p id="urgencySelectedText" class="mt-4 text-center font-serif text-lg font-semibold text-terracotta">
               Moderate — Ready for clarity and structured support soon.
             </p>
           </div>
@@ -501,285 +520,201 @@
   </section>
 
   <!-- =========================================================
-       6. MOMENTS & GALLERY SECTION ("IN ACTION")
-          Uses gallery-image1.jpg, gallery-image2.jpg, gallery-image3.jpg
+       6. MOMENTS & GALLERY SECTION ("IN ACTION" - HORIZONTAL SLIDER)
+          Uses all 19 gallery images with arrow controls & lightbox
   ========================================================== -->
   <section id="gallery" class="py-16 md:py-24">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <span class="text-xs font-bold uppercase tracking-widest text-terracotta" data-i18n="galleryEyebrow">In Action</span>
           <h2 class="mt-2 font-serif text-3xl sm:text-4xl font-semibold text-charcoal" data-i18n="galleryTitle">
             Moments &amp; Community Dialogue
           </h2>
+          <p class="mt-1 text-xs sm:text-sm text-muted" data-i18n="galleryHint">Swipe or use arrows to browse • Click any photo to view full screen</p>
         </div>
-        <p class="text-xs sm:text-sm text-muted" data-i18n="galleryHint">Click any photo to view full screen</p>
+
+        <!-- Gallery Slider Navigation Arrows + Counter -->
+        <div class="flex items-center gap-2.5">
+          <span id="galleryCounter" class="text-xs font-bold text-muted mr-1">01 / 19</span>
+          <button type="button" id="prevGalleryBtn" aria-label="Previous photo" class="w-11 h-11 rounded-full bg-cream border border-charcoal/20 flex items-center justify-center text-charcoal hover:bg-terracotta hover:text-cream hover:border-terracotta transition-colors shadow-2xs">
+            ←
+          </button>
+          <button type="button" id="nextGalleryBtn" aria-label="Next photo" class="w-11 h-11 rounded-full bg-cream border border-charcoal/20 flex items-center justify-center text-charcoal hover:bg-terracotta hover:text-cream hover:border-terracotta transition-colors shadow-2xs">
+            →
+          </button>
+        </div>
       </div>
 
-      <!-- Editorial Bento / Masonry Grid -->
-      <div class="mt-9 grid md:grid-cols-12 gap-5">
-        <!-- Gallery Image 1 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image1.jpg', 'cap1')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="gallery-image1.jpg"
-            alt="Media & Radio Features with Mrs M"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'gallery-image1.jpg', 'Media & Radio Features')"
-          />
+      <!-- Horizontal Snap-Scrolling Gallery Track -->
+      <div id="galleryTrack" class="mt-8 flex gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3">
+        <!-- 01 -->
+        <button type="button" onclick="openGalleryLightbox('gallery-image1.jpg', 'cap1')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="gallery-image1.jpg" alt="Media & Radio Features with Mrs M" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'gallery-image1.jpg', 'Media & Radio Features')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">01</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">01 / 19</span>
             <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap1">Media &amp; Radio Features</p>
           </div>
         </button>
 
-        <!-- Gallery Image 2 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="gallery-image2.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'gallery-image2.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 02 -->
+        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="gallery-image2.jpg" alt="Fireside & Evening Dialogue Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'gallery-image2.jpg', 'Fireside & Evening Dialogue Sessions')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02 / 19</span>
             <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
           </div>
         </button>
 
-         <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0014.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0014.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 03 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0014.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0014.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0014.jpg', 'Relationship & Community Sessions')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">03 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0015.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0015.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 04 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0015.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0015.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0015.jpg', 'Couples & Personal Growth Workshops')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">04 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0016.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0016.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 05 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0016.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0016.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0016.jpg', 'Guided Group Dialogues')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">05 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0017.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0017.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 06 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0017.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0017.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0017.jpg', 'Public Speaking & Empowerment')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">06 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0018.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0018.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 07 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0018.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0018.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0018.jpg', 'Relationship & Community Sessions')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">07 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0019.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0019.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 08 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0019.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0019.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0019.jpg', 'Couples & Personal Growth Workshops')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">08 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0020.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0020.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 09 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0020.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0020.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0020.jpg', 'Guided Group Dialogues')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">09 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0021.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0021.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 10 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0021.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0021.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0021.jpg', 'Public Speaking & Empowerment')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">10 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0022.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0022.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 11 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0022.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0022.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0022.jpg', 'Relationship & Community Sessions')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">11 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0023.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0023.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 12 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0023.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0023.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0023.jpg', 'Couples & Personal Growth Workshops')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">12 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0024.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0024.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 13 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0024.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0024.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0024.jpg', 'Guided Group Dialogues')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">13 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0025.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0025.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 14 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0025.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0025.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0025.jpg', 'Public Speaking & Empowerment')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">14 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0026.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0026.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 15 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0026.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0026.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0026.jpg', 'Relationship & Community Sessions')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">15 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0027.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0027.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 16 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0027.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0027.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0027.jpg', 'Couples & Personal Growth Workshops')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">16 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0028.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0028.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 17 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0028.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0028.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0028.jpg', 'Guided Group Dialogues')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">17 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="IMG-20261121-WA0029.jpg"
-            alt="Fireside & Evening Dialogue Sessions"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'IMG-20261121-WA0029.jpg', 'Fireside & Evening Dialogue Sessions')"
-          />
+        <!-- 18 -->
+        <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0029.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="IMG-20261121-WA0029.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0029.jpg', 'Public Speaking & Empowerment')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">02</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap2">Fireside &amp; Evening Dialogue Sessions</p>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">18 / 19</span>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
           </div>
         </button>
 
-        <!-- Gallery Image 3 -->
-        <button type="button" onclick="openGalleryLightbox('gallery-image3.jpg', 'cap3')" class="md:col-span-4 group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img
-            src="gallery-image3.jpg"
-            alt="Intimate Couples & Dinner Workshops"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onerror="handleImgFallback(this, 'gallery-image3.jpg', 'Intimate Couples & Dinner Workshops')"
-          />
+        <!-- 19 -->
+        <button type="button" onclick="openGalleryLightbox('gallery-image3.jpg', 'cap3')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
+          <img src="gallery-image3.jpg" alt="Intimate Couples & Dinner Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'gallery-image3.jpg', 'Intimate Couples & Dinner Workshops')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">03</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">19 / 19</span>
             <p class="font-serif text-lg font-medium mt-0.5" data-i18n="cap3">Intimate Couples &amp; Dinner Workshops</p>
           </div>
         </button>
@@ -1011,10 +946,14 @@
         pillarCta: "Enquire via WhatsApp →",
         galleryEyebrow: "In Action",
         galleryTitle: "Moments & Community Dialogue",
-        galleryHint: "Click any photo to view full screen",
+        galleryHint: "Swipe or use arrows to browse • Click any photo to view full screen",
         cap1: "Media & Radio Features",
         cap2: "Fireside & Evening Dialogue Sessions",
         cap3: "Intimate Couples & Dinner Workshops",
+        capSession: "Relationship & Community Sessions",
+        capWorkshop: "Couples & Personal Growth Workshops",
+        capDialogue: "Guided Group Dialogues",
+        capSpeaking: "Public Speaking & Empowerment",
         reviewsEyebrow: "Client Stories",
         reviewsTitle: "Trusted by Couples & Individuals",
         contactLangNote: "Sessions available in isiZulu & English",
@@ -1111,10 +1050,14 @@
         pillarCta: "Buza ku-WhatsApp →",
         galleryEyebrow: "Emsebenzini",
         galleryTitle: "Izikhathi Nezingxoxo Zomphakathi",
-        galleryHint: "Chofoza isithombe ukuze usibone sisikhulu",
+        galleryHint: "Swayipha noma usebenzise imicibisholo • Chofoza isithombe ukuze usibone sisikhulu",
         cap1: "Izinhlelo Zomsakazo Nabezindaba",
         cap2: "Izingxoxo Ezakhayo Eziko",
         cap3: "Izithangami Zezithandani",
+        capSession: "Izikhathi Zokweluleka Nomphakathi",
+        capWorkshop: "Izithangami Zezithandani Nokukhula",
+        capDialogue: "Izingxoxo Ezakhayo Zamaqembu",
+        capSpeaking: "Izinkulumo Zomphakathi Nokukhuthaza",
         reviewsEyebrow: "Okushiwo Ngabantu",
         reviewsTitle: "Basethemba Abashadile Nabantu Ngabanye",
         contactLangNote: "Izikhathi zitholakala ngesiZulu nesiNgisi",
@@ -1174,25 +1117,7 @@
       link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
     });
 
-    /* 3. GRACEFUL IMAGE FALLBACK HANDLER */
-    function handleImgFallback(imgEl, filename, label) {
-      const parent = imgEl.parentElement;
-      imgEl.style.display = 'none';
-      const fallback = document.createElement('div');
-      fallback.className = 'w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-ochre/20 via-creamDark to-terracotta/15 text-charcoal';
-      fallback.innerHTML = `
-        <svg class="w-10 h-10 text-terracotta mb-2 opacity-80" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
-          <rect x="3" y="3" width="18" height="18" rx="3"></rect>
-          <circle cx="8.5" cy="8.5" r="1.5"></circle>
-          <path d="M21 15l-5-5L5 21"></path>
-        </svg>
-        <p class="font-serif font-semibold text-base">${label}</p>
-        <p class="text-[11px] text-muted mt-1">Place <code class="bg-white/80 px-1.5 py-0.5 rounded">${filename}</code> in the same folder as index.html</p>
-      `;
-      parent.insertBefore(fallback, parent.firstChild);
-    }
-
-    /* 4. 30-SECOND CHECK-IN LOGIC */
+    /* 3. 30-SECOND CHECK-IN LOGIC */
     const checkState = {
       audience: 'relationship',
       focus: 'comm',
@@ -1319,7 +1244,35 @@
       document.getElementById('stepIndicator').textContent = translations[currentLang].step1Label;
     }
 
-    /* 5. GALLERY LIGHTBOX */
+    /* 4. GALLERY SLIDER & LIGHTBOX */
+    const galleryTrack = document.getElementById('galleryTrack');
+    const galleryCounter = document.getElementById('galleryCounter');
+    const totalGallerySlides = galleryTrack ? galleryTrack.children.length : 19;
+
+    function updateGalleryCounter() {
+      if (!galleryTrack || !galleryCounter) return;
+      const firstCard = galleryTrack.firstElementChild;
+      if (!firstCard) return;
+      const cardStep = firstCard.offsetWidth + 20; // card width + gap-5 (20px)
+      const currentIdx = Math.min(
+        totalGallerySlides,
+        Math.max(1, Math.round(galleryTrack.scrollLeft / cardStep) + 1)
+      );
+      galleryCounter.textContent = `${String(currentIdx).padStart(2, '0')} / ${String(totalGallerySlides).padStart(2, '0')}`;
+    }
+
+    if (galleryTrack) {
+      galleryTrack.addEventListener('scroll', updateGalleryCounter, { passive: true });
+      document.getElementById('nextGalleryBtn').addEventListener('click', () => {
+        const step = (galleryTrack.firstElementChild?.offsetWidth || 320) + 20;
+        galleryTrack.scrollBy({ left: step, behavior: 'smooth' });
+      });
+      document.getElementById('prevGalleryBtn').addEventListener('click', () => {
+        const step = (galleryTrack.firstElementChild?.offsetWidth || 320) + 20;
+        galleryTrack.scrollBy({ left: -step, behavior: 'smooth' });
+      });
+    }
+
     function openGalleryLightbox(src, captionKey) {
       const modal = document.getElementById('lightboxModal');
       document.getElementById('lightboxImg').src = src;
@@ -1333,7 +1286,7 @@
       modal.classList.remove('flex');
     }
 
-    /* 6. REVIEWS SLIDER CONTROLS */
+    /* 5. REVIEWS SLIDER CONTROLS */
     const reviewsTrack = document.getElementById('reviewsTrack');
     document.getElementById('nextReviewBtn').addEventListener('click', () => {
       reviewsTrack.scrollBy({ left: 320, behavior: 'smooth' });
