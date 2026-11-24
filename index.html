@@ -36,9 +36,8 @@
       },
     };
 
-    /* Early fallback handler so broken/missing local images never cause a ReferenceError */
+    /* Image fallback defined early so onerror never fails before bottom script loads */
     function handleImgFallback(imgEl, filename, label) {
-      if (!imgEl || !imgEl.parentElement) return;
       const parent = imgEl.parentElement;
       imgEl.style.display = 'none';
       const fallback = document.createElement('div');
@@ -63,13 +62,11 @@
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     }
 
-    /* Subtle organic pattern accent */
     .earth-dots {
       background-image: radial-gradient(#C8963E 1.5px, transparent 1.5px);
       background-size: 16px 16px;
     }
 
-    /* Smooth range slider styling */
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
@@ -97,7 +94,6 @@
       transform: scale(1.12);
     }
 
-    /* Hide scrollbar for horizontal sliders */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -141,9 +137,8 @@
         <a href="#contact" class="hover:text-terracotta transition-colors" data-i18n="navContact">Contact</a>
       </nav>
 
-      <!-- Right Actions: Bilingual Pill Toggle & Mobile Menu -->
+      <!-- Right Actions: Bilingual Pill Toggle & Book a Session Modal Trigger -->
       <div class="flex items-center gap-2.5">
-        <!-- Bilingual Pill Toggle -->
         <div class="inline-flex items-center p-1 rounded-full bg-creamDark border border-charcoal/15 shadow-2xs" role="group" aria-label="Language switcher">
           <button type="button" id="btnEn" onclick="setLanguage('en')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-forest text-cream shadow-2xs">
             EN
@@ -153,9 +148,15 @@
           </button>
         </div>
 
-        <a href="https://wa.me/27844162803" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-terracotta hover:bg-terracottaDark text-cream text-xs font-semibold transition-colors">
+        <button type="button" onclick="openBookingModal()" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-terracotta hover:bg-terracottaDark text-cream text-xs font-semibold transition-colors shadow-2xs cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
           <span data-i18n="navCta">Book a Session</span>
-        </a>
+        </button>
 
         <!-- Mobile Menu Button -->
         <button type="button" id="mobileMenuBtn" aria-label="Open menu" class="lg:hidden w-10 h-10 rounded-full border border-charcoal/20 flex items-center justify-center text-charcoal hover:bg-creamDark">
@@ -173,6 +174,9 @@
       <a href="#services" class="mobile-nav-link block py-2 font-medium text-charcoal hover:text-terracotta" data-i18n="navServices">Services</a>
       <a href="#gallery" class="mobile-nav-link block py-2 font-medium text-charcoal hover:text-terracotta" data-i18n="navGallery">Gallery</a>
       <a href="#contact" class="mobile-nav-link block py-2 font-medium text-charcoal hover:text-terracotta" data-i18n="navContact">Contact</a>
+      <button type="button" onclick="openBookingModal(); document.getElementById('mobileMenu').classList.add('hidden');" class="w-full mt-2 py-3 rounded-full bg-terracotta text-cream text-xs font-bold uppercase tracking-wider">
+        <span data-i18n="navCta">Book a Session</span>
+      </button>
     </div>
   </header>
 
@@ -198,16 +202,19 @@
 
         <!-- Primary & Secondary CTAs -->
         <div class="mt-8 flex flex-col sm:flex-row gap-3.5 max-w-lg">
-          <a href="#checkin" class="py-4 px-7 rounded-full bg-terracotta hover:bg-terracottaDark text-cream font-semibold text-sm sm:text-[15px] text-center shadow-sm transition-all flex items-center justify-center gap-2">
+          <button type="button" onclick="openBookingModal()" class="py-4 px-7 rounded-full bg-terracotta hover:bg-terracottaDark text-cream font-semibold text-sm sm:text-[15px] text-center shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span data-i18n="heroBookCta">Book a Session Online</span>
+          </button>
+
+          <a href="#checkin" class="py-4 px-7 rounded-full bg-forest hover:bg-forestLight text-cream font-semibold text-sm sm:text-[15px] text-center shadow-sm transition-all flex items-center justify-center gap-2">
             <span data-i18n="heroPrimaryCta">Start 30-Sec Check-In</span>
             <span>→</span>
-          </a>
-
-          <a href="https://wa.me/27844162803?text=Sawubona%20Mrs%20M%2C%20I%20visited%20your%20website%20and%20would%20like%20to%20enquire%20about%20a%20session." target="_blank" rel="noopener" class="py-4 px-7 rounded-full bg-forest hover:bg-forestLight text-cream font-semibold text-sm sm:text-[15px] text-center shadow-sm transition-all flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
-            </svg>
-            <span data-i18n="heroWhatsappCta">Chat on WhatsApp • 084 416 2803</span>
           </a>
         </div>
 
@@ -254,7 +261,6 @@
   ========================================================== -->
   <section id="about" class="py-16 md:py-24 bg-creamDark/60 border-y border-charcoal/10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-      <!-- Image Column (2nd page image.jpg) -->
       <div class="lg:col-span-5 order-2 lg:order-1">
         <div class="relative rounded-3xl overflow-hidden shadow-lg border-4 border-white bg-creamDark aspect-[4/4.6]">
           <img
@@ -270,7 +276,6 @@
         </div>
       </div>
 
-      <!-- Story & Qualifications Column -->
       <div class="lg:col-span-7 order-1 lg:order-2">
         <span class="text-xs font-bold uppercase tracking-widest text-terracotta" data-i18n="aboutEyebrow">Meet Your Coach</span>
         <h2 class="mt-2 font-serif text-3xl sm:text-4xl lg:text-[42px] font-semibold leading-tight text-charcoal" data-i18n="aboutTitle">
@@ -278,18 +283,17 @@
         </h2>
 
         <p class="mt-5 text-base text-muted leading-relaxed" data-i18n="aboutP1">
-          Thembeka Mchunu — affectionately known as Mrs M — brings together formal psychological knowledge with years of experience as an educator and public speaker. She understands the cultural, family, and emotional dynamics that shape modern South African relationships.
+          Thembeka Mchunu — affectionately known as Mrs M — brings together formal psychological training and years of experience as an educator and public speaker. She understands the cultural, family, and emotional dynamics that shape modern South African relationships.
         </p>
         <p class="mt-4 text-base text-muted leading-relaxed" data-i18n="aboutP2">
           Her sessions offer a calm, confidential space where couples and individuals can speak honestly, unpack painful patterns, and build practical communication tools that last.
         </p>
 
-        <!-- Qualifications Grid -->
         <div class="mt-7 grid sm:grid-cols-2 gap-3.5">
           <div class="p-4 rounded-2xl bg-cream border border-charcoal/10 flex items-start gap-3">
             <span class="w-8 h-8 rounded-full bg-terracotta/15 text-terracotta flex items-center justify-center font-bold text-sm shrink-0">✓</span>
             <div>
-              <h3 class="font-semibold text-sm text-charcoal" data-i18n="qual1Title">Masters candidate in Psychology</h3>
+              <h3 class="font-semibold text-sm text-charcoal" data-i18n="qual1Title">Masters in Psychology</h3>
               <p class="text-xs text-muted mt-0.5" data-i18n="qual1Sub">Evidence-informed emotional &amp; relational insight</p>
             </div>
           </div>
@@ -335,13 +339,11 @@
           30-Second Relationship Check-In
         </h2>
         <p class="mt-2.5 text-sm sm:text-base text-muted" data-i18n="checkinSub">
-          Answer three quick questions to receive a tailored reflection and send your check-in directly to Mrs M on WhatsApp.
+          Answer three quick questions to receive a tailored reflection and reserve your session time directly with Mrs M.
         </p>
       </div>
 
-      <!-- Check-In Card -->
       <div class="mt-8 rounded-3xl bg-white border border-charcoal/10 shadow-md p-6 sm:p-9">
-        <!-- Progress Bar -->
         <div class="flex items-center justify-between text-xs font-bold text-muted mb-3">
           <span id="stepIndicator" data-i18n="step1Label">Step 1 of 3</span>
           <button type="button" id="resetCheckinBtn" onclick="resetCheckIn()" class="hidden text-terracotta underline underline-offset-2" data-i18n="startOver">
@@ -352,7 +354,7 @@
           <div id="progressBar" class="h-full bg-terracotta transition-all duration-300 w-1/3"></div>
         </div>
 
-        <!-- STEP 1: Who is this for? -->
+        <!-- STEP 1 -->
         <div id="checkStep1">
           <h3 class="font-serif text-2xl text-charcoal" data-i18n="q1Title">1. Who is this check-in for?</h3>
           <div class="mt-5 grid sm:grid-cols-3 gap-3.5">
@@ -373,7 +375,7 @@
           </div>
         </div>
 
-        <!-- STEP 2: Current emotional weather / focus area -->
+        <!-- STEP 2 -->
         <div id="checkStep2" class="hidden">
           <h3 class="font-serif text-2xl text-charcoal" data-i18n="q2Title">2. What is your current emotional weather or focus area?</h3>
           <div class="mt-5 grid sm:grid-cols-2 gap-3.5">
@@ -399,7 +401,7 @@
           </div>
         </div>
 
-        <!-- STEP 3: Urgency Slider -->
+        <!-- STEP 3 -->
         <div id="checkStep3" class="hidden">
           <h3 class="font-serif text-2xl text-charcoal" data-i18n="q3Title">3. How urgent does support feel right now?</h3>
           <div class="mt-6 p-5 rounded-2xl bg-cream border border-charcoal/10">
@@ -410,7 +412,7 @@
             </div>
             <input id="urgencySlider" type="range" min="1" max="3" step="1" value="2" class="w-full" oninput="updateUrgencyLabel(this.value)" />
             <p id="urgencySelectedText" class="mt-4 text-center font-serif text-lg font-semibold text-terracotta">
-              Moderate — Ready for clarity and structured support soon.
+              Moderate — Ready for structured guidance soon.
             </p>
           </div>
 
@@ -431,9 +433,9 @@
           </div>
 
           <div class="mt-6 flex flex-col sm:flex-row gap-3">
-            <a id="sendCheckinWhatsapp" href="#" target="_blank" rel="noopener" class="flex-1 py-4 px-6 rounded-full bg-terracotta hover:bg-terracottaDark text-cream font-semibold text-sm text-center shadow-sm transition-colors flex items-center justify-center gap-2">
-              <span data-i18n="sendWhatsappBtn">Send My Check-In to Mrs M on WhatsApp</span>
-            </a>
+            <button type="button" id="bookFromCheckinBtn" onclick="openBookingFromCheckIn()" class="flex-1 py-4 px-6 rounded-full bg-terracotta hover:bg-terracottaDark text-cream font-semibold text-sm text-center shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              <span data-i18n="bookWithSummaryBtn">Book This Session with Mrs M →</span>
+            </button>
             <button type="button" onclick="resetCheckIn()" class="py-4 px-6 rounded-full border border-charcoal/25 text-charcoal font-semibold text-sm hover:bg-creamDark transition-colors" data-i18n="retakeBtn">
               Retake Check-In
             </button>
@@ -444,7 +446,7 @@
   </section>
 
   <!-- =========================================================
-       5. SERVICES SECTION (3 CLEAR PILLARS WITH ICONS)
+       5. SERVICES SECTION (3 CLEAR PILLARS WITH BOOKING BUTTONS)
   ========================================================== -->
   <section id="services" class="py-16 md:py-24 bg-forest text-cream">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -454,7 +456,7 @@
           Three Pillars of Support
         </h2>
         <p class="mt-3 text-sm sm:text-base text-cream/80" data-i18n="servicesSub">
-          Confidential one-on-one, couples, and group sessions available in isiZulu and English.
+          Confidential solo, couples, and group sessions available in isiZulu and English.
         </p>
       </div>
 
@@ -475,9 +477,9 @@
               <li class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-terracotta"></span><span data-i18n="s1_4">Relationship Building</span></li>
             </ul>
           </div>
-          <a href="https://wa.me/27844162803?text=Hi%20Mrs%20M%2C%20I%20would%20like%20to%20enquire%20about%20Couples%20%26%20Marriage%20counselling." target="_blank" rel="noopener" class="mt-7 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-terracotta hover:text-terracottaDark" data-i18n="pillarCta">
-            Enquire via WhatsApp →
-          </a>
+          <button type="button" onclick="openBookingModal('couple', 'Couples & Marriage Counselling')" class="mt-7 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-terracotta hover:text-terracottaDark cursor-pointer text-left" data-i18n="pillarCta">
+            Reserve Date &amp; Time →
+          </button>
         </div>
 
         <!-- Pillar 2: Workshops & Growth -->
@@ -497,9 +499,9 @@
               Interactive group dialogues and structured programmes designed for lasting self-awareness and shared growth.
             </p>
           </div>
-          <a href="https://wa.me/27844162803?text=Hi%20Mrs%20M%2C%20I%20would%20like%20to%20enquire%20about%20Workshops%20%26%20Growth%20programmes." target="_blank" rel="noopener" class="mt-7 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-terracotta hover:text-terracottaDark" data-i18n="pillarCta">
-            Enquire via WhatsApp →
-          </a>
+          <button type="button" onclick="openBookingModal('couple', 'Workshops & Growth Programme')" class="mt-7 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-terracotta hover:text-terracottaDark cursor-pointer text-left" data-i18n="pillarCta">
+            Reserve Date &amp; Time →
+          </button>
         </div>
 
         <!-- Pillar 3: Personal & Intimacy Coaching -->
@@ -518,9 +520,9 @@
               <li class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-forest"></span><span data-i18n="s3_4">Couples Sex Therapy</span></li>
             </ul>
           </div>
-          <a href="https://wa.me/27844162803?text=Hi%20Mrs%20M%2C%20I%20would%20like%20to%20enquire%20about%20Personal%20%26%20Intimacy%20Coaching." target="_blank" rel="noopener" class="mt-7 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-terracotta hover:text-terracottaDark" data-i18n="pillarCta">
-            Enquire via WhatsApp →
-          </a>
+          <button type="button" onclick="openBookingModal('solo', 'Personal & Intimacy Coaching')" class="mt-7 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-terracotta hover:text-terracottaDark cursor-pointer text-left" data-i18n="pillarCta">
+            Reserve Date &amp; Time →
+          </button>
         </div>
       </div>
     </div>
@@ -528,7 +530,6 @@
 
   <!-- =========================================================
        6. MOMENTS & GALLERY SECTION ("IN ACTION" - HORIZONTAL SLIDER)
-          Uses all 19 gallery images with arrow controls & lightbox
   ========================================================== -->
   <section id="gallery" class="py-16 md:py-24">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -541,7 +542,6 @@
           <p class="mt-1 text-xs sm:text-sm text-muted" data-i18n="galleryHint">Swipe or use arrows to browse • Click any photo to view full screen</p>
         </div>
 
-        <!-- Gallery Slider Navigation Arrows + Counter -->
         <div class="flex items-center gap-2.5">
           <span id="galleryCounter" class="text-xs font-bold text-muted mr-1">01 / 19</span>
           <button type="button" id="prevGalleryBtn" aria-label="Previous photo" class="w-11 h-11 rounded-full bg-cream border border-charcoal/20 flex items-center justify-center text-charcoal hover:bg-terracotta hover:text-cream hover:border-terracotta transition-colors shadow-2xs">
@@ -553,9 +553,7 @@
         </div>
       </div>
 
-      <!-- Horizontal Snap-Scrolling Gallery Track -->
       <div id="galleryTrack" class="mt-8 flex gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3">
-        <!-- 01 -->
         <button type="button" onclick="openGalleryLightbox('gallery-image1.jpg', 'cap1')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
           <img src="gallery-image1.jpg" alt="Media & Radio Features with Mrs M" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'gallery-image1.jpg', 'Media & Radio Features')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
@@ -564,7 +562,6 @@
           </div>
         </button>
 
-        <!-- 02 -->
         <button type="button" onclick="openGalleryLightbox('gallery-image2.jpg', 'cap2')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
           <img src="gallery-image2.jpg" alt="Fireside & Evening Dialogue Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'gallery-image2.jpg', 'Fireside & Evening Dialogue Sessions')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
@@ -573,151 +570,134 @@
           </div>
         </button>
 
-        <!-- 03 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0014.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0014.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0014.jpg', 'Relationship & Community Sessions')" />
+          <img src="IMG-20261121-WA0014.jpg" alt="Community & Coaching Moments" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0014.jpg', 'Community & Coaching Moments')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">03 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Community &amp; Coaching Moments</p>
           </div>
         </button>
 
-        <!-- 04 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0015.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0015.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0015.jpg', 'Couples & Personal Growth Workshops')" />
+          <img src="IMG-20261121-WA0015.jpg" alt="Workshops & Community Dialogue" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0015.jpg', 'Workshops & Community Dialogue')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">04 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Workshops &amp; Community Dialogue</p>
           </div>
         </button>
 
-        <!-- 05 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0016.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0016.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0016.jpg', 'Guided Group Dialogues')" />
+          <img src="IMG-20261121-WA0016.jpg" alt="Guided Relationship Conversations" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0016.jpg', 'Guided Relationship Conversations')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">05 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Relationship Conversations</p>
           </div>
         </button>
 
-        <!-- 06 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0017.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0017.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0017.jpg', 'Public Speaking & Empowerment')" />
+          <img src="IMG-20261121-WA0017.jpg" alt="Public Speaking & Seminars" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0017.jpg', 'Public Speaking & Seminars')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">06 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Seminars</p>
           </div>
         </button>
 
-        <!-- 07 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0018.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0018.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0018.jpg', 'Relationship & Community Sessions')" />
+          <img src="IMG-20261121-WA0018.jpg" alt="Community & Coaching Moments" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0018.jpg', 'Community & Coaching Moments')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">07 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Community &amp; Coaching Moments</p>
           </div>
         </button>
 
-        <!-- 08 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0019.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0019.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0019.jpg', 'Couples & Personal Growth Workshops')" />
+          <img src="IMG-20261121-WA0019.jpg" alt="Workshops & Community Dialogue" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0019.jpg', 'Workshops & Community Dialogue')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">08 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Workshops &amp; Community Dialogue</p>
           </div>
         </button>
 
-        <!-- 09 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0020.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0020.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0020.jpg', 'Guided Group Dialogues')" />
+          <img src="IMG-20261121-WA0020.jpg" alt="Guided Relationship Conversations" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0020.jpg', 'Guided Relationship Conversations')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">09 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Relationship Conversations</p>
           </div>
         </button>
 
-        <!-- 10 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0021.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0021.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0021.jpg', 'Public Speaking & Empowerment')" />
+          <img src="IMG-20261121-WA0021.jpg" alt="Public Speaking & Seminars" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0021.jpg', 'Public Speaking & Seminars')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">10 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Seminars</p>
           </div>
         </button>
 
-        <!-- 11 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0022.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0022.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0022.jpg', 'Relationship & Community Sessions')" />
+          <img src="IMG-20261121-WA0022.jpg" alt="Community & Coaching Moments" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0022.jpg', 'Community & Coaching Moments')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">11 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Community &amp; Coaching Moments</p>
           </div>
         </button>
 
-        <!-- 12 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0023.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0023.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0023.jpg', 'Couples & Personal Growth Workshops')" />
+          <img src="IMG-20261121-WA0023.jpg" alt="Workshops & Community Dialogue" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0023.jpg', 'Workshops & Community Dialogue')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">12 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Workshops &amp; Community Dialogue</p>
           </div>
         </button>
 
-        <!-- 13 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0024.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0024.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0024.jpg', 'Guided Group Dialogues')" />
+          <img src="IMG-20261121-WA0024.jpg" alt="Guided Relationship Conversations" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0024.jpg', 'Guided Relationship Conversations')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">13 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Relationship Conversations</p>
           </div>
         </button>
 
-        <!-- 14 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0025.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0025.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0025.jpg', 'Public Speaking & Empowerment')" />
+          <img src="IMG-20261121-WA0025.jpg" alt="Public Speaking & Seminars" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0025.jpg', 'Public Speaking & Seminars')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">14 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Seminars</p>
           </div>
         </button>
 
-        <!-- 15 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0026.jpg', 'capSession')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0026.jpg" alt="Relationship & Community Sessions" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0026.jpg', 'Relationship & Community Sessions')" />
+          <img src="IMG-20261121-WA0026.jpg" alt="Community & Coaching Moments" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0026.jpg', 'Community & Coaching Moments')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">15 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Relationship &amp; Community Sessions</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSession">Community &amp; Coaching Moments</p>
           </div>
         </button>
 
-        <!-- 16 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0027.jpg', 'capWorkshop')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0027.jpg" alt="Couples & Personal Growth Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0027.jpg', 'Couples & Personal Growth Workshops')" />
+          <img src="IMG-20261121-WA0027.jpg" alt="Workshops & Community Dialogue" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0027.jpg', 'Workshops & Community Dialogue')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">16 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Couples &amp; Personal Growth Workshops</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capWorkshop">Workshops &amp; Community Dialogue</p>
           </div>
         </button>
 
-        <!-- 17 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0028.jpg', 'capDialogue')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0028.jpg" alt="Guided Group Dialogues" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0028.jpg', 'Guided Group Dialogues')" />
+          <img src="IMG-20261121-WA0028.jpg" alt="Guided Relationship Conversations" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0028.jpg', 'Guided Relationship Conversations')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">17 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Group Dialogues</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capDialogue">Guided Relationship Conversations</p>
           </div>
         </button>
 
-        <!-- 18 -->
         <button type="button" onclick="openGalleryLightbox('IMG-20261121-WA0029.jpg', 'capSpeaking')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
-          <img src="IMG-20261121-WA0029.jpg" alt="Public Speaking & Empowerment" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0029.jpg', 'Public Speaking & Empowerment')" />
+          <img src="IMG-20261121-WA0029.jpg" alt="Public Speaking & Seminars" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'IMG-20261121-WA0029.jpg', 'Public Speaking & Seminars')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
             <span class="text-[11px] font-bold uppercase tracking-wider text-ochre">18 / 19</span>
-            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Empowerment</p>
+            <p class="font-serif text-lg font-medium mt-0.5" data-i18n="capSpeaking">Public Speaking &amp; Seminars</p>
           </div>
         </button>
 
-        <!-- 19 -->
         <button type="button" onclick="openGalleryLightbox('gallery-image3.jpg', 'cap3')" class="snap-start shrink-0 w-[82%] sm:w-[46%] lg:w-[31%] group relative rounded-3xl overflow-hidden shadow-md bg-creamDark aspect-[3/4] text-left focus:outline-none">
           <img src="gallery-image3.jpg" alt="Intimate Couples & Dinner Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImgFallback(this, 'gallery-image3.jpg', 'Intimate Couples & Dinner Workshops')" />
           <div class="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-charcoal/90 via-charcoal/45 to-transparent text-cream">
@@ -804,16 +784,19 @@
       </h2>
 
       <p class="mt-4 text-base text-cream/80 max-w-xl mx-auto" data-i18n="contactSub">
-        Reach out via WhatsApp or phone call to schedule a confidential consultation in Claridge Pietermaritzburg (New Development) or online.
+        Reserve your preferred date and time online or call directly to schedule a confidential consultation in Pietermaritzburg or online.
       </p>
 
-      <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4 max-w-lg mx-auto">
-        <a href="https://wa.me/27844162803?text=Sawubona%20Mrs%20M%2C%20I%20would%20like%20to%20book%20a%20session." target="_blank" rel="noopener" class="flex-1 py-4 px-7 rounded-full bg-terracotta hover:bg-terracottaDark text-cream font-semibold text-sm sm:text-base shadow-md transition-colors flex items-center justify-center gap-2">
+      <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto">
+        <button type="button" onclick="openBookingModal()" class="flex-1 py-4 px-7 rounded-full bg-terracotta hover:bg-terracottaDark text-cream font-semibold text-sm sm:text-base shadow-md transition-colors flex items-center justify-center gap-2 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
-          <span data-i18n="contactWhatsapp">WhatsApp 084 416 2803</span>
-        </a>
+          <span data-i18n="contactBook">Book a Session</span>
+        </button>
 
         <a href="tel:+27844162803" class="flex-1 py-4 px-7 rounded-full bg-cream text-charcoal hover:bg-creamDark font-semibold text-sm sm:text-base shadow-md transition-colors flex items-center justify-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -826,15 +809,18 @@
       <div class="mt-10 pt-8 border-t border-cream/15 grid sm:grid-cols-3 gap-6 text-sm text-cream/75 text-left">
         <div>
           <p class="font-serif text-lg text-cream font-semibold">Relationship Building with Mrs M</p>
-          <p class="mt-1 text-xs">Thembeka Mchunu • Qualified Educator, BA (Hons) Psychology, Masters candidate in Psychology, Public Speaker</p>
+          <p class="mt-1 text-xs">Thembeka Mchunu • Qualified Educator, BA (Hons) Psychology, Masters in Psychology, Public Speaker</p>
+          <p class="mt-2 text-xs text-ochre">relationship-building-with-mrsm@outlook.com</p>
         </div>
         <div>
-          <p class="font-semibold text-cream" data-i18n="footerHoursTitle">Opening Hours</p>
-          <p class="mt-1 text-xs" data-i18n="footerHours">Mon–Fri: 08:00–17:00 • Sat: 08:00–14:00 • Sun: 08:00–13:00</p>
+          <p class="font-semibold text-cream" data-i18n="footerHoursTitle">Session Availability</p>
+          <p class="mt-1 text-xs leading-relaxed" data-i18n="footerHours">
+            Mon–Fri: 15:00–18:00 • School Holidays: 08:00–15:00 • Sat &amp; Sun: 09:00–14:00
+          </p>
         </div>
         <div>
           <p class="font-semibold text-cream" data-i18n="footerLocTitle">Location</p>
-          <p class="mt-1 text-xs" data-i18n="footerLoc">Claridge Pietermaritzburg (New Development), KwaZulu-Natal &amp; Online Nationwide</p>
+          <p class="mt-1 text-xs" data-i18n="footerLoc">Pietermaritzburg, KwaZulu-Natal &amp; Online Nationwide</p>
         </div>
       </div>
 
@@ -849,9 +835,220 @@
     <a href="tel:+27844162803" class="py-2.5 rounded-full bg-cream text-charcoal font-bold text-xs text-center" data-i18n="mobileCall">
       Call 084 416 2803
     </a>
-    <a href="https://wa.me/27844162803" target="_blank" rel="noopener" class="py-2.5 rounded-full bg-terracotta text-cream font-bold text-xs text-center" data-i18n="mobileWhatsapp">
-      WhatsApp Mrs M
-    </a>
+    <button type="button" onclick="openBookingModal()" class="py-2.5 rounded-full bg-terracotta text-cream font-bold text-xs text-center" data-i18n="mobileBook">
+      Book a Session
+    </button>
+  </div>
+
+  <!-- =========================================================
+       9. BOOK A SESSION MODAL (MATCHES SKETCH + OUTLOOK EMAIL & CALENDAR)
+  ========================================================== -->
+  <div id="bookingModal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-5 bg-charcoal/80 backdrop-blur-xs overflow-y-auto" onclick="closeBookingModal()">
+    <div class="relative w-full max-w-lg rounded-3xl bg-cream border border-charcoal/15 shadow-2xl p-6 sm:p-8 my-auto text-charcoal" onclick="event.stopPropagation()">
+      <!-- Top Header with Isometric Logo + BOOK A SESSION (matching sketch) -->
+      <div class="flex items-center justify-between gap-3 pb-4 border-b border-charcoal/10">
+        <div class="flex items-center gap-3">
+          <svg class="w-9 h-9 shrink-0" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <polygon points="32,4 56,18 32,32 8,18" fill="#E9B8C2" />
+            <polygon points="8,18 32,32 32,60 8,46" fill="#C99CA6" />
+            <polygon points="56,18 56,46 32,60 32,32" fill="#D8A7B1" />
+            <polygon points="32,16 46,24 46,40 32,48 18,40 18,24" fill="#2A2426" />
+            <polyline points="18,24 32,32 46,24" stroke="#E9B8C2" stroke-width="2.6" stroke-linejoin="round" />
+            <line x1="32" y1="32" x2="32" y2="48" stroke="#D8A7B1" stroke-width="2.6" stroke-linecap="round" />
+          </svg>
+          <div>
+            <h3 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-charcoal uppercase" data-i18n="bookModalTitle">
+              Book a Session
+            </h3>
+            <p class="text-[11px] text-muted" data-i18n="bookModalSub">
+              Direct calendar reservation with Mrs M
+            </p>
+          </div>
+        </div>
+
+        <button type="button" onclick="closeBookingModal()" aria-label="Close booking form" class="w-9 h-9 rounded-full bg-creamDark hover:bg-charcoal hover:text-cream flex items-center justify-center text-sm font-bold transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- BOOKING FORM -->
+      <form id="bookingForm" onsubmit="submitBooking(event)" class="mt-5 space-y-4">
+        <!-- 1. FULL NAME -->
+        <div>
+          <label for="bookFullName" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5" data-i18n="bookNameLabel">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            id="bookFullName"
+            required
+            placeholder="e.g. Thabo & Naledi Dlamini"
+            class="w-full px-4 py-3 rounded-xl bg-white border border-charcoal/20 text-sm text-charcoal focus:outline-none focus:border-terracotta"
+          />
+        </div>
+
+        <!-- Client Email & Phone (for calendar confirmation) -->
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label for="bookClientEmail" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5" data-i18n="bookEmailLabel">
+              Your Email Address *
+            </label>
+            <input
+              type="email"
+              id="bookClientEmail"
+              required
+              placeholder="you@example.com"
+              class="w-full px-4 py-3 rounded-xl bg-white border border-charcoal/20 text-sm text-charcoal focus:outline-none focus:border-terracotta"
+            />
+          </div>
+          <div>
+            <label for="bookClientPhone" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5" data-i18n="bookPhoneLabel">
+              Phone / WhatsApp *
+            </label>
+            <input
+              type="tel"
+              id="bookClientPhone"
+              required
+              placeholder="073 123 4567"
+              class="w-full px-4 py-3 rounded-xl bg-white border border-charcoal/20 text-sm text-charcoal focus:outline-none focus:border-terracotta"
+            />
+          </div>
+        </div>
+
+        <!-- 2. COUPLE OR SOLO SESSION DROPDOWN -->
+        <div>
+          <label for="bookSessionType" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5" data-i18n="bookTypeLabel">
+            Couple or Solo Session *
+          </label>
+          <div class="relative">
+            <select
+              id="bookSessionType"
+              required
+              class="w-full appearance-none px-4 py-3 rounded-xl bg-white border border-charcoal/20 text-sm font-medium text-charcoal focus:outline-none focus:border-terracotta pr-10"
+            >
+              <option value="Couple Session" data-i18n="optCouple">Couple Session (Partners / Marriage)</option>
+              <option value="Solo Session" data-i18n="optSolo">Solo Session (Individual Coaching)</option>
+            </select>
+            <span class="pointer-events-none absolute inset-y-0 right-3.5 flex items-center text-charcoal/60 text-xs">▼</span>
+          </div>
+        </div>
+
+        <!-- 3. RESERVE A DATE & TIME -->
+        <div class="p-4 rounded-2xl bg-white border border-charcoal/15 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label for="bookDate" class="text-xs font-bold uppercase tracking-wider text-charcoal" data-i18n="bookDateTimeLabel">
+              Reserve a Date &amp; Time *
+            </label>
+            <span id="scheduleRuleBadge" class="px-2.5 py-0.5 rounded-full bg-forest/10 text-forest text-[11px] font-bold">
+              Mon–Fri: 15:00 – 18:00
+            </span>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3 items-center">
+            <input
+              type="date"
+              id="bookDate"
+              required
+              onchange="renderAvailableTimeSlots()"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-cream border border-charcoal/20 text-sm font-medium text-charcoal focus:outline-none focus:border-terracotta"
+            />
+
+            <label class="flex items-center gap-2 text-xs font-medium text-charcoal cursor-pointer select-none bg-cream/70 px-3 py-2.5 rounded-xl border border-charcoal/10">
+              <input type="checkbox" id="schoolHolidayToggle" onchange="renderAvailableTimeSlots()" class="rounded text-terracotta focus:ring-terracotta" />
+              <span data-i18n="holidayCheckLabel">School Holiday (08:00–15:00)</span>
+            </label>
+          </div>
+
+          <!-- Interactive Time Slots Grid (Shows Open vs Booked) -->
+          <div>
+            <div class="flex items-center justify-between text-[11px] text-muted mb-2">
+              <span data-i18n="selectSlotPrompt">Select an available 1-hour slot:</span>
+              <span class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-forest"></span> Open</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-charcoal/30"></span> Booked</span>
+              </span>
+            </div>
+            <div id="timeSlotsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+            <input type="hidden" id="selectedTimeSlot" required />
+            <p id="slotErrorMsg" class="hidden text-xs text-terracotta font-semibold mt-1.5">
+              Please select an available time slot above.
+            </p>
+          </div>
+        </div>
+
+        <!-- Optional Note -->
+        <div>
+          <label for="bookNotes" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1" data-i18n="bookNotesLabel">
+            Session Focus / Notes (Optional)
+          </label>
+          <textarea
+            id="bookNotes"
+            rows="2"
+            placeholder="In-person (PMB) or Online, or any brief context..."
+            class="w-full px-4 py-2.5 rounded-xl bg-white border border-charcoal/20 text-sm text-charcoal focus:outline-none focus:border-terracotta"
+          ></textarea>
+        </div>
+
+        <!-- Deposit & Availability Confirmation Notice -->
+        <div class="p-3.5 rounded-2xl bg-ochre/15 border border-ochre/40 text-xs text-charcoal leading-relaxed">
+          <p class="font-bold text-terracotta uppercase tracking-wider text-[11px] mb-1" data-i18n="depositNoticeTitle">
+            How Booking Confirmation Works
+          </p>
+          <p data-i18n="depositNoticeBody">
+            Your requested slot will be held as <strong>Pending Deposit &amp; Availability</strong>. Mrs M will review your request, send deposit details to your email/number, and once your deposit is received, you will receive your official calendar confirmation email.
+          </p>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button
+          type="submit"
+          id="submitBookingBtn"
+          class="w-full py-4 px-6 rounded-full bg-terracotta hover:bg-terracottaDark text-cream font-bold text-sm uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span data-i18n="bookSubmitBtn">Request Booking Slot</span>
+          <span>→</span>
+        </button>
+      </form>
+
+      <!-- BOOKING CONFIRMATION + OUTLOOK CALENDAR SYNC VIEW -->
+      <div id="bookingConfirmation" class="hidden mt-5 space-y-4">
+        <div class="p-5 rounded-2xl bg-forest text-cream">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-ochre text-charcoal text-xs font-bold uppercase tracking-wider">
+            ⏳ <span data-i18n="bookConfirmedBadge">Pending Deposit &amp; Confirmation</span>
+          </div>
+          <h4 class="mt-3 font-serif text-2xl font-semibold" id="confirmHeadline">Booking Request Received!</h4>
+          <p class="mt-2 text-xs sm:text-sm text-cream/90 leading-relaxed" id="confirmDetailsText"></p>
+          <p class="mt-3 text-[11px] text-ochre font-medium">
+            Booking request sent to Mrs M (relationship-building-with-mrsm@outlook.com). Once your deposit is paid and Mrs M confirms availability, your final confirmation email will be sent to your inbox.
+          </p>
+        </div>
+
+        <!-- Direct Calendar Buttons -->
+        <div class="grid sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onclick="downloadICSInvite()"
+            class="py-3.5 px-4 rounded-xl bg-terracotta hover:bg-terracottaDark text-cream font-semibold text-xs text-center shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>📅 Download Outlook Calendar (.ics)</span>
+          </button>
+
+          <a
+            id="outlookWebCalendarLink"
+            href="#"
+            target="_blank"
+            rel="noopener"
+            class="py-3.5 px-4 rounded-xl bg-white border border-charcoal/20 hover:bg-creamDark text-charcoal font-semibold text-xs text-center transition-colors flex items-center justify-center gap-2"
+          >
+            <span>🗓️ Open in Outlook Web Calendar</span>
+          </a>
+        </div>
+
+        <button type="button" onclick="resetBookingModal()" class="w-full py-3 rounded-full border border-charcoal/20 text-xs font-bold text-charcoal hover:bg-creamDark transition-colors">
+          Book Another Session
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Lightbox Modal -->
@@ -866,7 +1063,7 @@
   </div>
 
   <!-- =========================================================
-       JAVASCRIPT: BILINGUAL ENGINE, 30-SEC CHECK-IN, GALLERY & SLIDER
+       JAVASCRIPT: BILINGUAL ENGINE, BOOKING + OUTLOOK CALENDAR, CHECK-IN & SLIDERS
   ========================================================== -->
   <script>
     /* 1. BILINGUAL DICTIONARY (ENGLISH & CONVERSATIONAL KZN isiZULU) */
@@ -882,19 +1079,19 @@
         heroBadge: "Relationship Coach • Public Speaker",
         heroTitle: "Healthy relationships begin with understanding yourself and each other.",
         heroSub: "Grounded, confidential guidance for couples and individuals across South Africa. Whether you are preparing for marriage, rebuilding trust, or seeking personal clarity, Mrs M walks beside you without judgement.",
+        heroBookCta: "Book a Session Online",
         heroPrimaryCta: "Start 30-Sec Check-In",
-        heroWhatsappCta: "Chat on WhatsApp • 084 416 2803",
         trustRating: "5.0 Google Rating",
         trustLang: "isiZulu & English Sessions",
         trustMode: "In-Person (PMB) & Online",
-        heroCardSub: "Masters candidate in Psychology • Educator",
+        heroCardSub: "Masters in Psychology • Educator",
         aboutPhotoTag: "Safe, Judgment-Free Dialogue",
         aboutPhotoCaption: "Guiding couples and individuals with warmth and depth.",
         aboutEyebrow: "Meet Your Coach",
         aboutTitle: "Academic depth paired with real-world South African warmth.",
-        aboutP1: "Thembeka Mchunu — affectionately known as Mrs M — brings together formal psychological knowledge and years of experience as an educator and public speaker. She understands the cultural, family, and emotional dynamics that shape modern South African relationships.",
+        aboutP1: "Thembeka Mchunu — affectionately known as Mrs M — brings together formal psychological training and years of experience as an educator and public speaker. She understands the cultural, family, and emotional dynamics that shape modern South African relationships.",
         aboutP2: "Her sessions offer a calm, confidential space where couples and individuals can speak honestly, unpack painful patterns, and build practical communication tools that last.",
-        qual1Title: "Masters candidate in Psychology ",
+        qual1Title: "Masters in Psychology",
         qual1Sub: "Evidence-informed emotional & relational insight",
         qual2Title: "BA (Hons) Psychology",
         qual2Sub: "Deep understanding of human behaviour & healing",
@@ -904,7 +1101,7 @@
         qual4Sub: "Radio guest, workshop facilitator & community voice",
         checkinEyebrow: "Interactive Self-Reflection",
         checkinTitle: "30-Second Relationship Check-In",
-        checkinSub: "Answer three quick questions to receive a tailored reflection and send your check-in directly to Mrs M on WhatsApp.",
+        checkinSub: "Answer three quick questions to receive a tailored reflection and reserve your session time directly with Mrs M.",
         step1Label: "Step 1 of 3",
         step2Label: "Step 2 of 3",
         step3Label: "Step 3 of 3",
@@ -931,11 +1128,11 @@
         urgHigh: "Heavy / Urgent",
         seeReflectionBtn: "See My Reflection →",
         resultBadge: "Your Personalised Reflection",
-        sendWhatsappBtn: "Send My Check-In to Mrs M on WhatsApp",
+        bookWithSummaryBtn: "Book This Session with Mrs M →",
         retakeBtn: "Retake Check-In",
         servicesEyebrow: "How We Work Together",
         servicesTitle: "Three Pillars of Support",
-        servicesSub: "Confidential one-on-one, couples, and group sessions available in isiZulu and English.",
+        servicesSub: "Confidential solo, couples, and group sessions available in isiZulu and English.",
         pillar1Title: "Couples & Marriage",
         s1_1: "Premarital Counselling",
         s1_2: "Marital Counselling",
@@ -950,30 +1147,46 @@
         s3_2: "Communication Skills Training",
         s3_3: "Conflict Resolution",
         s3_4: "Couples Sex Therapy",
-        pillarCta: "Enquire via WhatsApp →",
+        pillarCta: "Reserve Date & Time →",
         galleryEyebrow: "In Action",
         galleryTitle: "Moments & Community Dialogue",
         galleryHint: "Swipe or use arrows to browse • Click any photo to view full screen",
         cap1: "Media & Radio Features",
         cap2: "Fireside & Evening Dialogue Sessions",
         cap3: "Intimate Couples & Dinner Workshops",
-        capSession: "Relationship & Community Sessions",
-        capWorkshop: "Couples & Personal Growth Workshops",
-        capDialogue: "Guided Group Dialogues",
-        capSpeaking: "Public Speaking & Empowerment",
+        capSession: "Community & Coaching Moments",
+        capWorkshop: "Workshops & Community Dialogue",
+        capDialogue: "Guided Relationship Conversations",
+        capSpeaking: "Public Speaking & Seminars",
         reviewsEyebrow: "Client Stories",
         reviewsTitle: "Trusted by Couples & Individuals",
         contactLangNote: "Sessions available in isiZulu & English",
         contactTitle: "Ready to take the next step?",
-        contactSub: "Reach out via WhatsApp or phone call to schedule a confidential consultation in Claridge Pietermaritzburg (New Development) or online.",
-        contactWhatsapp: "WhatsApp 084 416 2803",
+        contactSub: "Reserve your preferred date and time online or call directly to schedule a confidential consultation in Pietermaritzburg or online.",
+        contactBook: "Book a Session",
         contactCall: "Call 084 416 2803",
-        footerHoursTitle: "Opening Hours",
-        footerHours: "Mon–Fri: 08:00–17:00 • Sat: 08:00–14:00 • Sun: 08:00–13:00",
+        footerHoursTitle: "Session Availability",
+        footerHours: "Mon–Fri: 15:00–18:00 • School Holidays: 08:00–15:00 • Sat & Sun: 09:00–14:00",
         footerLocTitle: "Location",
-        footerLoc: "Claridge Pietermaritzburg (New Development), KwaZulu-Natal & Online Nationwide",
+        footerLoc: "Pietermaritzburg, KwaZulu-Natal & Online Nationwide",
         mobileCall: "Call 084 416 2803",
-        mobileWhatsapp: "WhatsApp Mrs M"
+        mobileBook: "Book a Session",
+        bookModalTitle: "Book a Session",
+        bookModalSub: "Direct calendar reservation with Mrs M",
+        bookNameLabel: "Full Name *",
+        bookEmailLabel: "Your Email Address *",
+        bookPhoneLabel: "Phone / WhatsApp *",
+        bookTypeLabel: "Couple or Solo Session *",
+        optCouple: "Couple Session (Partners / Marriage)",
+        optSolo: "Solo Session (Individual Coaching)",
+        bookDateTimeLabel: "Reserve a Date & Time *",
+        holidayCheckLabel: "School Holiday (08:00–15:00)",
+        selectSlotPrompt: "Select an available 1-hour slot:",
+        bookNotesLabel: "Session Focus / Notes (Optional)",
+        depositNoticeTitle: "How Booking Confirmation Works",
+        depositNoticeBody: "Your requested slot will be held as Pending Deposit & Availability. Mrs M will review your request, share deposit details via your email/number, and once your deposit is paid, you will receive your official confirmation email.",
+        bookSubmitBtn: "Request Booking Slot",
+        bookConfirmedBadge: "Pending Deposit & Confirmation"
       },
       zu: {
         brandSub: "no-Mrs M • Thembeka Mchunu",
@@ -986,8 +1199,8 @@
         heroBadge: "Umeluleki Wezobudlelwano • Isikhulumi",
         heroTitle: "Ubudlelwano obunempilo buqala ngokuzazi wena nokwazana nomunye.",
         heroSub: "Ukwelulekwa okunokuthula nokuyimfihlo kwabashadikazi, izithandani, kanye nabantu ngabanye eNingizimu Afrika. Noma ngabe nilungiselela umshado, nivuselela ukwethembana, noma nifuna ukuthula kwangaphakathi, u-Mrs M uhamba nani ngaphandle kokwahlulela.",
+        heroBookCta: "Bhuka Isikhathi Ku-Online",
         heroPrimaryCta: "Qala Ukuzihlola (30-Sec)",
-        heroWhatsappCta: "Xoxa ku-WhatsApp • 084 416 2803",
         trustRating: "5.0 Ku-Google",
         trustLang: "Izikhathi ngesiZulu nesiNgisi",
         trustMode: "E-PMB Naku-Online",
@@ -1008,7 +1221,7 @@
         qual4Sub: "Izinhlelo zomsakazo, izithangami nezingxoxo zomphakathi",
         checkinEyebrow: "Ukuzihlola Okusheshayo",
         checkinTitle: "Ukuzihlola Kwezobudlelwano Kwemizuzwana Engu-30",
-        checkinSub: "Phendula imibuzo emithathu elula ukuze uthole iseluleko esiqondene nawe bese usithumela ku-Mrs M ku-WhatsApp.",
+        checkinSub: "Phendula imibuzo emithathu elula ukuze uthole iseluleko esiqondene nawe bese ubhuka isikhathi sakho no-Mrs M.",
         step1Label: "Isinyathelo 1 kwangu-3",
         step2Label: "Isinyathelo 2 kwangu-3",
         step3Label: "Isinyathelo 3 kwangu-3",
@@ -1035,7 +1248,7 @@
         urgHigh: "Kuyaphuthuma / Kuyasinda",
         seeReflectionBtn: "Bona Iseluleko Sami →",
         resultBadge: "Iseluleko Esiqondene Nawe",
-        sendWhatsappBtn: "Thumela ku-Mrs M ku-WhatsApp",
+        bookWithSummaryBtn: "Bhuka Lesi Sikhathi No-Mrs M →",
         retakeBtn: "Phinda Ukuzihlola",
         servicesEyebrow: "Indlela Esisebenza Ngayo",
         servicesTitle: "Izinsika Ezintathu Zosizo",
@@ -1054,30 +1267,46 @@
         s3_2: "Amakhono Okuxhumana Kahle",
         s3_3: "Ukuxazulula Izingxabano (Conflict Resolution)",
         s3_4: "Ukwelulekwa Kwezocansi Kwabashadile (Sex Therapy)",
-        pillarCta: "Buza ku-WhatsApp →",
+        pillarCta: "Khetha Usuku Nesikhathi →",
         galleryEyebrow: "Emsebenzini",
         galleryTitle: "Izikhathi Nezingxoxo Zomphakathi",
-        galleryHint: "Swayipha noma usebenzise imicibisholo • Chofoza isithombe ukuze usibone sisikhulu",
+        galleryHint: "Shelelisa noma usebenzise imicibisholo • Chofoza isithombe ukuze usibone sisikhulu",
         cap1: "Izinhlelo Zomsakazo Nabezindaba",
         cap2: "Izingxoxo Ezakhayo Eziko",
         cap3: "Izithangami Zezithandani",
         capSession: "Izikhathi Zokweluleka Nomphakathi",
-        capWorkshop: "Izithangami Zezithandani Nokukhula",
-        capDialogue: "Izingxoxo Ezakhayo Zamaqembu",
-        capSpeaking: "Izinkulumo Zomphakathi Nokukhuthaza",
+        capWorkshop: "Izithangami Nezingxoxo",
+        capDialogue: "Izingxoxo Ezakhayo Zobudlelwano",
+        capSpeaking: "Izinkulumo Nezithangami",
         reviewsEyebrow: "Okushiwo Ngabantu",
         reviewsTitle: "Basethemba Abashadile Nabantu Ngabanye",
         contactLangNote: "Izikhathi zitholakala ngesiZulu nesiNgisi",
         contactTitle: "Usukulungele ukuthatha isinyathelo esilandelayo?",
-        contactSub: "Xhumana no-Mrs M ku-WhatsApp noma ufone ukuze uhlele isikhathi e-Pietermaritzburg noma ku-Online.",
-        contactWhatsapp: "WhatsApp 084 416 2803",
+        contactSub: "Khetha usuku nesikhathi sakho ku-online noma ufone ukuze uhlele isikhathi e-Pietermaritzburg noma ku-Online.",
+        contactBook: "Bhuka Isikhathi",
         contactCall: "Fonela 084 416 2803",
-        footerHoursTitle: "Izikhathi Zokusebenza",
-        footerHours: "Msombuluko–Lwesihlanu: 08:00–17:00 • Mgqibelo: 08:00–14:00 • Sonto: 08:00–13:00",
+        footerHoursTitle: "Izikhathi Zokubhuka",
+        footerHours: "Msombuluko–Lwesihlanu: 15:00–18:00 • Amaholide Esikole: 08:00–15:00 • Mgqibelo & Sonto: 09:00–14:00",
         footerLocTitle: "Indawo",
-        footerLoc: "Claridge Pietermaritzburg (New Development), KwaZulu-Natal Naku-Online Ezweni Lonke",
+        footerLoc: "Pietermaritzburg, KwaZulu-Natal Naku-Online Ezweni Lonke",
         mobileCall: "Fonela 084 416 2803",
-        mobileWhatsapp: "WhatsApp Mrs M"
+        mobileBook: "Bhuka Isikhathi",
+        bookModalTitle: "Bhuka Isikhathi",
+        bookModalSub: "Hlela isikhathi sakho ngqo no-Mrs M",
+        bookNameLabel: "Igama Lakho Eligcwele *",
+        bookEmailLabel: "I-Email Yakho *",
+        bookPhoneLabel: "Inombolo Yocingo / WhatsApp *",
+        bookTypeLabel: "Isikhathi Sezithandani Noma Somuntu Oyedwa *",
+        optCouple: "Couple Session (Izithandani / Abashadile)",
+        optSolo: "Solo Session (Umuntu Oyedwa)",
+        bookDateTimeLabel: "Khetha Usuku Nesikhathi *",
+        holidayCheckLabel: "Iholide Lesikole (08:00–15:00)",
+        selectSlotPrompt: "Khetha isikhathi esitholakalayo (1 ihora):",
+        bookNotesLabel: "Okufisa ukuxoxa ngakho (Ongakukhetha)",
+        depositNoticeTitle: "Indlela Ukuqinisekiswa Kokubhuka Okusebenza Ngayo",
+        depositNoticeBody: "Isikhathi osikhethile sizobekwa njenge-Pending Deposit. U-Mrs M uzohlola isikhathi bese ethumela imininingwane yedeposit ku-email noma inombolo yakho; uma usukhokhile uzothola i-email yokuqinisekisa.",
+        bookSubmitBtn: "Thumela Isicelo Sokubhuka",
+        bookConfirmedBadge: "Kulindwe I-Deposit Nokuqinisekiswa"
       }
     };
 
@@ -1088,7 +1317,6 @@
       localStorage.setItem('mrsm_lang', lang);
       document.documentElement.lang = lang === 'zu' ? 'zu' : 'en';
 
-      // Update toggle pill styles
       const btnEn = document.getElementById('btnEn');
       const btnZu = document.getElementById('btnZu');
       if (lang === 'en') {
@@ -1099,7 +1327,6 @@
         btnEn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition-all text-charcoal/75 hover:text-charcoal';
       }
 
-      // Translate all [data-i18n] nodes
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (translations[lang] && translations[lang][key]) {
@@ -1107,7 +1334,6 @@
         }
       });
 
-      // Refresh dynamic check-in labels if active
       updateUrgencyLabel(document.getElementById('urgencySlider').value);
       if (!document.getElementById('checkResult').classList.contains('hidden')) {
         renderCheckInResult();
@@ -1124,7 +1350,296 @@
       link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
     });
 
-    /* 3. 30-SECOND CHECK-IN LOGIC */
+    /* 3. BOOK A SESSION MODAL & AVAILABILITY ENGINE */
+    const MRS_M_EMAIL = 'relationship-building-with-mrsm@outlook.com';
+    let lastCompletedBooking = null;
+
+    // South African School Holiday Date Ranges (2026 & 2027 KZN Inland/Coastal windows)
+    const schoolHolidayRanges = [
+      ['2026-03-28', '2026-04-07'],
+      ['2026-06-27', '2026-07-20'],
+      ['2026-09-24', '2026-10-05'],
+      ['2026-12-10', '2027-01-13'],
+      ['2027-03-20', '2027-04-05'],
+      ['2027-06-26', '2027-07-19'],
+      ['2027-09-25', '2027-10-04'],
+      ['2027-12-09', '2028-01-12']
+    ];
+
+    function isSchoolHolidayDate(dateStr) {
+      return schoolHolidayRanges.some(([start, end]) => dateStr >= start && dateStr <= end);
+    }
+
+    function getBookedSlotsStore() {
+      try {
+        return JSON.parse(localStorage.getItem('mrsm_booked_slots') || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveBookedSlot(dateStr, slotLabel) {
+      const store = getBookedSlotsStore();
+      if (!store[dateStr]) store[dateStr] = [];
+      if (!store[dateStr].includes(slotLabel)) {
+        store[dateStr].push(slotLabel);
+      }
+      localStorage.setItem('mrsm_booked_slots', JSON.stringify(store));
+    }
+
+    function openBookingModal(sessionKind = 'couple', prefillNote = '') {
+      const modal = document.getElementById('bookingModal');
+      document.getElementById('bookingForm').classList.remove('hidden');
+      document.getElementById('bookingConfirmation').classList.add('hidden');
+
+      const typeSelect = document.getElementById('bookSessionType');
+      typeSelect.value = sessionKind === 'solo' ? 'Solo Session' : 'Couple Session';
+
+      if (prefillNote) {
+        document.getElementById('bookNotes').value = prefillNote;
+      }
+
+      const dateInput = document.getElementById('bookDate');
+      const todayIso = new Date().toISOString().split('T')[0];
+      dateInput.min = todayIso;
+      if (!dateInput.value || dateInput.value < todayIso) {
+        dateInput.value = todayIso;
+      }
+
+      // Auto-check school holiday toggle if selected date falls inside KZN school holidays
+      document.getElementById('schoolHolidayToggle').checked = isSchoolHolidayDate(dateInput.value);
+      renderAvailableTimeSlots();
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeBookingModal() {
+      const modal = document.getElementById('bookingModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function resetBookingModal() {
+      document.getElementById('bookingForm').reset();
+      openBookingModal();
+    }
+
+    function renderAvailableTimeSlots() {
+      const dateStr = document.getElementById('bookDate').value;
+      const isHoliday = document.getElementById('schoolHolidayToggle').checked;
+      const badge = document.getElementById('scheduleRuleBadge');
+      const grid = document.getElementById('timeSlotsGrid');
+      const hiddenInput = document.getElementById('selectedTimeSlot');
+      hiddenInput.value = '';
+      document.getElementById('slotErrorMsg').classList.add('hidden');
+
+      if (!dateStr) return;
+
+      const parsedDate = new Date(dateStr + 'T12:00:00');
+      const dayOfWeek = parsedDate.getDay(); // 0 = Sun, 6 = Sat
+      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+      let slots = [];
+      if (isWeekend) {
+        badge.textContent = 'Weekend: 09:00 – 14:00';
+        slots = [
+          { label: '09:00 – 10:00', start: '09:00', end: '10:00' },
+          { label: '10:00 – 11:00', start: '10:00', end: '11:00' },
+          { label: '11:00 – 12:00', start: '11:00', end: '12:00' },
+          { label: '12:00 – 13:00', start: '12:00', end: '13:00' },
+          { label: '13:00 – 14:00', start: '13:00', end: '14:00' }
+        ];
+      } else if (isHoliday) {
+        badge.textContent = 'School Holiday: 08:00 – 15:00';
+        slots = [
+          { label: '08:00 – 09:00', start: '08:00', end: '09:00' },
+          { label: '09:00 – 10:00', start: '09:00', end: '10:00' },
+          { label: '10:00 – 11:00', start: '10:00', end: '11:00' },
+          { label: '11:00 – 12:00', start: '11:00', end: '12:00' },
+          { label: '12:00 – 13:00', start: '12:00', end: '13:00' },
+          { label: '13:00 – 14:00', start: '13:00', end: '14:00' },
+          { label: '14:00 – 15:00', start: '14:00', end: '15:00' }
+        ];
+      } else {
+        badge.textContent = 'Mon–Fri (After 15:00): 15:00 – 18:00';
+        slots = [
+          { label: '15:00 – 16:00', start: '15:00', end: '16:00' },
+          { label: '16:00 – 17:00', start: '16:00', end: '17:00' },
+          { label: '17:00 – 18:00', start: '17:00', end: '18:00' }
+        ];
+      }
+
+      const bookedForDay = getBookedSlotsStore()[dateStr] || [];
+      grid.innerHTML = '';
+
+      slots.forEach(slot => {
+        const isBooked = bookedForDay.includes(slot.label);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+
+        if (isBooked) {
+          btn.disabled = true;
+          btn.className = 'px-2.5 py-2.5 rounded-xl border border-charcoal/10 bg-creamDark/80 text-charcoal/45 text-xs font-semibold cursor-not-allowed flex flex-col items-center justify-center';
+          btn.innerHTML = `<span>${slot.label}</span><span class="text-[10px] uppercase tracking-wider text-terracotta/80 font-bold mt-0.5">Booked</span>`;
+        } else {
+          btn.className = 'slot-choice-btn px-2.5 py-2.5 rounded-xl border border-forest/25 bg-cream/60 hover:border-terracotta text-charcoal text-xs font-semibold transition-all flex flex-col items-center justify-center cursor-pointer';
+          btn.innerHTML = `<span>${slot.label}</span><span class="text-[10px] uppercase tracking-wider text-forest font-bold mt-0.5">Open</span>`;
+          btn.onclick = () => {
+            document.querySelectorAll('.slot-choice-btn').forEach(el => {
+              el.className = 'slot-choice-btn px-2.5 py-2.5 rounded-xl border border-forest/25 bg-cream/60 hover:border-terracotta text-charcoal text-xs font-semibold transition-all flex flex-col items-center justify-center cursor-pointer';
+            });
+            btn.className = 'slot-choice-btn px-2.5 py-2.5 rounded-xl border-2 border-terracotta bg-terracotta text-cream text-xs font-bold shadow-xs transition-all flex flex-col items-center justify-center cursor-pointer';
+            btn.querySelector('span:last-child').className = 'text-[10px] uppercase tracking-wider text-ochre font-bold mt-0.5';
+            hiddenInput.value = JSON.stringify(slot);
+            document.getElementById('slotErrorMsg').classList.add('hidden');
+          };
+        }
+        grid.appendChild(btn);
+      });
+    }
+
+    function formatICSDateTime(dateStr, timeStr) {
+      const cleanDate = dateStr.replace(/-/g, '');
+      const cleanTime = timeStr.replace(':', '') + '00';
+      return `${cleanDate}T${cleanTime}`;
+    }
+
+    function buildICSContent(booking) {
+      const dtStart = formatICSDateTime(booking.date, booking.slot.start);
+      const dtEnd = formatICSDateTime(booking.date, booking.slot.end);
+      const uid = `mrsm-${Date.now()}@relationshipbuildingwithmrsm.co.za`;
+      const summary = `${booking.sessionType} — ${booking.fullName}`;
+      const description = [
+        `Client: ${booking.fullName}`,
+        `Session Type: ${booking.sessionType}`,
+        `Phone/WhatsApp: ${booking.phone}`,
+        `Client Email: ${booking.email}`,
+        booking.notes ? `Notes: ${booking.notes}` : ''
+      ].filter(Boolean).join('\\n');
+
+      return [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Relationship Building with Mrs M//Booking System//EN',
+        'METHOD:REQUEST',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${dtStart}Z`,
+        `DTSTART;TZID=Africa/Johannesburg:${dtStart}`,
+        `DTEND;TZID=Africa/Johannesburg:${dtEnd}`,
+        `SUMMARY:${summary}`,
+        `DESCRIPTION:${description}`,
+        `ORGANIZER;CN="Relationship Building with Mrs M":mailto:${MRS_M_EMAIL}`,
+        `ATTENDEE;CN="${booking.fullName}";RSVP=TRUE:mailto:${booking.email}`,
+        'LOCATION:Pietermaritzburg / Online Session',
+        'STATUS:CONFIRMED',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+    }
+
+    function downloadICSInvite() {
+      if (!lastCompletedBooking) return;
+      const icsText = buildICSContent(lastCompletedBooking);
+      const blob = new Blob([icsText], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Mrs-M-Session-${lastCompletedBooking.date}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function submitBooking(e) {
+      e.preventDefault();
+      const slotRaw = document.getElementById('selectedTimeSlot').value;
+      if (!slotRaw) {
+        document.getElementById('slotErrorMsg').classList.remove('hidden');
+        return;
+      }
+
+      const slotObj = JSON.parse(slotRaw);
+      const booking = {
+        fullName: document.getElementById('bookFullName').value.trim(),
+        email: document.getElementById('bookClientEmail').value.trim(),
+        phone: document.getElementById('bookClientPhone').value.trim(),
+        sessionType: document.getElementById('bookSessionType').value,
+        date: document.getElementById('bookDate').value,
+        isHoliday: document.getElementById('schoolHolidayToggle').checked,
+        slot: slotObj,
+        notes: document.getElementById('bookNotes').value.trim()
+      };
+
+      const submitBtn = document.getElementById('submitBookingBtn');
+      const originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Sending Calendar Reservation...</span>';
+
+      // Build Outlook Web Deep-Link so Mrs M or client can add directly in 1 click
+      const outlookStart = `${booking.date}T${booking.slot.start}:00`;
+      const outlookEnd = `${booking.date}T${booking.slot.end}:00`;
+      const outlookSubject = encodeURIComponent(`${booking.sessionType} with Mrs M (${booking.fullName})`);
+      const outlookBody = encodeURIComponent(
+        `Client: ${booking.fullName}\nType: ${booking.sessionType}\nPhone: ${booking.phone}\nEmail: ${booking.email}\nDeposit Status: Paid / Confirmed\nNotes: ${booking.notes || 'N/A'}`
+      );
+      const outlookCalUrl = `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=${encodeURIComponent(outlookStart)}&enddt=${encodeURIComponent(outlookEnd)}&subject=${outlookSubject}&body=${outlookBody}`;
+
+      // Build 1-click "Send Confirmation Email to Client" mailto link for Mrs M to click after deposit is received
+      const clientConfirmSubject = encodeURIComponent(`Session Confirmed: Relationship Building with Mrs M (${booking.date} @ ${booking.slot.label})`);
+      const clientConfirmBody = encodeURIComponent(
+        `Sawubona ${booking.fullName},\n\nThank you for your deposit! Your ${booking.sessionType} with Mrs M is officially CONFIRMED.\n\n• Date: ${booking.date}\n• Time: ${booking.slot.label}\n• Contact Number: ${booking.phone}\n\nWe look forward to walking this journey with you.\n\nWarm regards,\nThembeka Mchunu (Mrs M)\nRelationship Building with Mrs M\n084 416 2803`
+      );
+      const sendClientConfirmEmailUrl = `mailto:${encodeURIComponent(booking.email)}?subject=${clientConfirmSubject}&body=${clientConfirmBody}`;
+
+      // Dispatch email notification to relationship-building-with-mrsm@outlook.com via FormSubmit AJAX
+      try {
+        await fetch(`https://formsubmit.co/ajax/${MRS_M_EMAIL}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `[ACTION REQUIRED - PENDING DEPOSIT] Booking Request: ${booking.fullName} (${booking.date} @ ${booking.slot.label})`,
+            _replyto: booking.email,
+            _template: 'table',
+            Status: 'PENDING DEPOSIT & AVAILABILITY CONFIRMATION',
+            Client_Name: booking.fullName,
+            Client_Phone_WhatsApp: booking.phone,
+            Client_Email: booking.email,
+            Session_Type: booking.sessionType,
+            Requested_Date: booking.date,
+            Requested_Time: booking.slot.label,
+            Schedule_Mode: booking.isHoliday ? 'School Holiday Hours (08:00–15:00)' : 'Standard Schedule',
+            Notes: booking.notes || 'None',
+            Step_1_Add_To_Your_Outlook_Calendar: outlookCalUrl,
+            Step_2_After_Deposit_Send_Confirmation_To_Client: sendClientConfirmEmailUrl
+          })
+        });
+      } catch (err) {
+        // Fallback still proceeds to mark booked locally and provide .ics / Outlook link
+      }
+
+      // Mark slot as Booked so it displays as Booked on subsequent views
+      saveBookedSlot(booking.date, booking.slot.label);
+      lastCompletedBooking = booking;
+
+      // Update Confirmation UI
+      document.getElementById('confirmHeadline').textContent = `${booking.sessionType} — Slot Held`;
+      document.getElementById('confirmDetailsText').textContent =
+        `${booking.fullName} • ${booking.date} (${booking.slot.label}). We have notified Mrs M with your number (${booking.phone}) and email (${booking.email}). Once she confirms availability and your deposit is received, your official confirmation email will be sent to ${booking.email}.`;
+      document.getElementById('outlookWebCalendarLink').href = outlookCalUrl;
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHtml;
+      document.getElementById('bookingForm').classList.add('hidden');
+      document.getElementById('bookingConfirmation').classList.remove('hidden');
+    }
+
+    /* 4. 30-SECOND CHECK-IN LOGIC */
     const checkState = {
       audience: 'relationship',
       focus: 'comm',
@@ -1232,13 +1747,13 @@
         currentLang === 'en'
           ? `Focus: ${audLabel} • Priority: ${urgLabel}`
           : `Okukhethiwe: ${audLabel} • Isimo: ${urgLabel}`;
+    }
 
-      const waMessage = currentLang === 'en'
-        ? `Sawubona Mrs M, I just completed the 30-Second Check-In on your website.\n• For: ${audLabel}\n• Focus: ${focusItem.title}\n• Urgency: ${urgLabel}\n\nI would love to arrange a session.`
-        : `Sawubona Mrs M, ngisanda kugcwalisa ukuzihlola kwemizuzwana engu-30 ku-website yakho.\n• Okwabani: ${audLabel}\n• Okudinga ukunakwa: ${focusItem.title}\n• Isimo: ${urgLabel}\n\nNgicela ukuhlela isikhathi sokubonana nawe.`;
-
-      document.getElementById('sendCheckinWhatsapp').href =
-        `https://wa.me/27844162803?text=${encodeURIComponent(waMessage)}`;
+    function openBookingFromCheckIn() {
+      const kind = checkState.audience === 'myself' ? 'solo' : 'couple';
+      const heading = document.getElementById('resultHeading').textContent;
+      const summary = document.getElementById('resultSummaryLine').textContent;
+      openBookingModal(kind, `30-Sec Check-In: ${heading} (${summary})`);
     }
 
     function resetCheckIn() {
@@ -1251,7 +1766,21 @@
       document.getElementById('stepIndicator').textContent = translations[currentLang].step1Label;
     }
 
-    /* 4. GALLERY SLIDER & LIGHTBOX */
+    /* 5. GALLERY LIGHTBOX */
+    function openGalleryLightbox(src, captionKey) {
+      const modal = document.getElementById('lightboxModal');
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightboxCaption').textContent = translations[currentLang][captionKey] || '';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeGalleryLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /* 6. GALLERY SLIDER ARROWS & COUNTER */
     const galleryTrack = document.getElementById('galleryTrack');
     const galleryCounter = document.getElementById('galleryCounter');
     const totalGallerySlides = galleryTrack ? galleryTrack.children.length : 19;
@@ -1260,7 +1789,7 @@
       if (!galleryTrack || !galleryCounter) return;
       const firstCard = galleryTrack.firstElementChild;
       if (!firstCard) return;
-      const cardStep = firstCard.offsetWidth + 20; // card width + gap-5 (20px)
+      const cardStep = firstCard.offsetWidth + 20;
       const currentIdx = Math.min(
         totalGallerySlides,
         Math.max(1, Math.round(galleryTrack.scrollLeft / cardStep) + 1)
@@ -1280,20 +1809,7 @@
       });
     }
 
-    function openGalleryLightbox(src, captionKey) {
-      const modal = document.getElementById('lightboxModal');
-      document.getElementById('lightboxImg').src = src;
-      document.getElementById('lightboxCaption').textContent = translations[currentLang][captionKey] || '';
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-    function closeGalleryLightbox() {
-      const modal = document.getElementById('lightboxModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    /* 5. REVIEWS SLIDER CONTROLS */
+    /* 7. REVIEWS SLIDER CONTROLS */
     const reviewsTrack = document.getElementById('reviewsTrack');
     document.getElementById('nextReviewBtn').addEventListener('click', () => {
       reviewsTrack.scrollBy({ left: 320, behavior: 'smooth' });
